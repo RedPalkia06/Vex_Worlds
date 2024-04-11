@@ -6,12 +6,12 @@ using namespace vex;
 class Drivetrain {
     private:
       //define motors for the drivetrain
-        motor LeftRear = motor(PORT1, ratio6_1, false);
-        motor LeftMid = motor(PORT2, ratio6_1, false);
-        motor LeftFront = motor(PORT3, ratio6_1, false);
-        motor RightRear = motor(PORT4, ratio6_1, false);
-        motor RightMid = motor(PORT5, ratio6_1, false);
-        motor RightFront = motor(PORT6, ratio6_1, false);
+        motor LeftRear = motor(PORT4, ratio6_1, false);
+        motor LeftMid = motor(PORT5, ratio6_1, false);
+        motor LeftFront = motor(PORT6, ratio6_1, false);
+        motor RightRear = motor(PORT1, ratio6_1, true);
+        motor RightMid = motor(PORT2, ratio6_1, true);
+        motor RightFront = motor(PORT3, ratio6_1, true);
 
         double rightSidePosition[2] = {0, 0};
         double leftSidePosition[2] = {0, 0};
@@ -21,7 +21,6 @@ class Drivetrain {
         double getRotation() {
             return (-Inertial.angle(degrees)) * Constants::TO_RADIANS;
         }
-
 
     public:
 
@@ -40,4 +39,5 @@ class Drivetrain {
         void updatePositions(double dt);
         void setMotorSpeeds(controller c);
 };
+
 #endif
