@@ -36,4 +36,20 @@ void closeWings(pneumatics p) {
     p.close();
 }
 
+void wingDown(pneumatics p) {
+    p.close();
+}
+
+void wingUp(pneumatics p) {
+    p.open();
+}
+
 //climber
+
+void climb(pneumatics p) {
+    p.close();
+}
+
+void climbDown(pneumatics p) {
+    p.open();
+}

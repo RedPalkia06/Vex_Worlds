@@ -28,11 +28,11 @@ void Drivetrain::setMotorSpeeds(controller c) {
 }
 
 void Drivetrain::updatePositions(double dt) {
-  Drivetrain::leftSidePosition[0] = leftSidePosition[0] + Constants::WHEEL_RADIUS * Drivetrain::LeftSide.velocity(dps) * cos(Drivetrain::getRotation()) * dt * Constants::TO_RADIANS;
-  Drivetrain::rightSidePosition[0] = rightSidePosition[0] + Constants::WHEEL_RADIUS * Drivetrain::RightSide.velocity(dps) * cos(Drivetrain::getRotation()) * dt * Constants::TO_RADIANS;
+  Drivetrain::leftSidePosition[0] = leftSidePosition[0] + Constants::WHEEL_CIRC * Drivetrain::RightSide.velocity(rpm) * dt * cos(Drivetrain::getRotation())/ 60.0;
+  Drivetrain::rightSidePosition[0] = rightSidePosition[0] + Constants::WHEEL_CIRC * Drivetrain::LeftSide.velocity(rpm) * dt * cos(Drivetrain::getRotation())/ 60.0;
   Drivetrain::position[0] = (Drivetrain::leftSidePosition[0] + Drivetrain::rightSidePosition[0]) / 2.0;
-  Drivetrain::leftSidePosition[1] = leftSidePosition[1] + Constants::WHEEL_RADIUS * Drivetrain::LeftSide.velocity(dps) * sin(Drivetrain::getRotation()) * dt * Constants::TO_RADIANS;
-  Drivetrain::rightSidePosition[1] = rightSidePosition[1] + Constants::WHEEL_RADIUS * Drivetrain::RightSide.velocity(dps) * sin(Drivetrain::getRotation()) * dt * Constants::TO_RADIANS;
+  Drivetrain::leftSidePosition[1] = leftSidePosition[1] + Constants::WHEEL_CIRC * Drivetrain::RightSide.velocity(rpm) * dt * sin(Drivetrain::getRotation())/ 60.0;
+  Drivetrain::rightSidePosition[1] = rightSidePosition[1] + Constants::WHEEL_CIRC * Drivetrain::LeftSide.velocity(rpm) * dt * sin(Drivetrain::getRotation())/ 60.0;
   Drivetrain::position[1] = (Drivetrain::leftSidePosition[1] + Drivetrain::rightSidePosition[1]) / 2.0;
 }
 //odometry: should be inside the drivetrain class

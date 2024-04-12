@@ -9,5 +9,8 @@ void input(motor m);
 void stopIntake(motor m);
 void openWings(pneumatics p);
 void closeWings(pneumatics p);
-
+void climb(pneumatics p);
+void climbDown(pneumatics p);
+void wingDown(pneumatics p);
+void wingUp(pneumatics p);
 #endif

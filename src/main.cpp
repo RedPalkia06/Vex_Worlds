@@ -24,15 +24,19 @@ Drivetrain drivetrain1 = Drivetrain();
 motor Launcher = motor(PORT12, ratio36_1, true);
 motor Intake = motor(PORT10, ratio6_1, false);
 pneumatics Wings = pneumatics(Brain.ThreeWirePort.A);
-
+pneumatics SideWing = pneumatics(Brain.ThreeWirePort.B);
+pneumatics Climber = pneumatics(Brain.ThreeWirePort.H);
 /* Autonomous Code here 
 *  1 = No Auto
 *  2 = Offense
 *  3 = Defense
 *  4 = Skills
 */
+
+//arc to point: true is right
 void autonomous() {
-  drive_for(Brain, drivetrain1, 100, 30, 25);
+  double position[2] = {200, 200};
+  arc_to_point(Brain, drivetrain1, drivetrain1.position, position, 290, 10, true, 10);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -62,6 +66,7 @@ void odometryLoop() {
 
 /* Run before autonomous is initialized */
 void preAutonomous() {
+  drivetrain1.Inertial.setRotation(90, degrees);
   Intake.setVelocity(100, percent);
   drivetrain1.LeftSide.spin(forward);
   drivetrain1.RightSide.spin(forward);
@@ -89,6 +94,18 @@ void closeWingsCallback() {
 void launchLoopCallback() {
   launchLoop(Controller1, Launcher);
 }
+void climbCallback() {
+  climb(Climber);
+}
+void climbDownCallback() {
+  climbDown(Climber);
+}
+void wingDownCallback() {
+  wingDown(SideWing);
+}
+void wingUpCallback() {
+  wingUp(SideWing);
+}
 
 void driverControl() {
   Controller1.ButtonL1.released(stopIntakeCallback);
@@ -97,6 +114,10 @@ void driverControl() {
   Controller1.ButtonL2.pressed(inputCallback);
   Controller1.ButtonA.pressed(openWingsCallback);
   Controller1.ButtonB.pressed(closeWingsCallback);
+  Controller1.ButtonUp.pressed(climbCallback);
+  Controller1.ButtonDown.pressed(climbDownCallback);
+  Controller1.ButtonX.pressed(wingDownCallback);
+  Controller1.ButtonY.pressed(wingUpCallback);
   thread LaunchLoop = thread(launchLoopCallback);
   // User control code here, inside the loop
   while (1) {

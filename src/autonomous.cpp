@@ -8,10 +8,10 @@
 
 //calculatePercentDifference: determines the difference in percentage from the average percentage of distance travelled
 double calculatePercentDifference(double totalDistance, double calcDistance, double otherDistance) {
-    double calcPercent = calcDistance / totalDistance;
-    double otherPercent = otherDistance / totalDistance;
-    double avgPercent = (calcPercent + otherPercent) / 2.0;
-    return (avgPercent - calcPercent) * 100.0;
+        double calcPercent = calcDistance / totalDistance;
+        double otherPercent = otherDistance / totalDistance;
+        double avgPercent = (calcPercent + otherPercent) / 2.0;
+        return (avgPercent - calcPercent) * 100.0;
 }
 
 bool drive_for(brain Brain, Drivetrain drivetrain, double distance, double velocity, double timeout = 10.0) {
@@ -25,11 +25,15 @@ bool drive_for(brain Brain, Drivetrain drivetrain, double distance, double veloc
     double ti = Brain.Timer.time(seconds);
     double dt = 0;
     //each side of the drivetrain must drive distance cm forward
-    while(avgPercent < 1.0 && ti - startTime < 10.0) {
+    while(avgPercent < 1.0 && ti - startTime < timeout) {
         dt = Brain.Timer.time(seconds) - ti;
         ti = Brain.Timer.time(seconds);
         leftDistance = leftDistance + Constants::WHEEL_CIRC * drivetrain.LeftSide.velocity(rpm) * dt / 60.0;
         rightDistance = rightDistance + Constants::WHEEL_CIRC * drivetrain.RightSide.velocity(rpm) * dt / 60.0;
+        Brain.Screen.setCursor(3, 3);
+        Brain.Screen.print(leftDistance);
+        Brain.Screen.print("  ");
+        Brain.Screen.print(rightDistance);
         //adjust drive velocity based off of the percent difference from the average
         drivetrain.LeftSide.setVelocity(velocity + sensitivity * calculatePercentDifference(distance, leftDistance, rightDistance), percent);
         drivetrain.RightSide.setVelocity(velocity + sensitivity * calculatePercentDifference(distance, rightDistance, leftDistance), percent);
@@ -40,17 +44,75 @@ bool drive_for(brain Brain, Drivetrain drivetrain, double distance, double veloc
     return true;
 }
 
-//drive to point functions:
-//take in current position {x, y} of robot
-//target position {x, y}
-//turn to point function?
-//drive corrected distance to the point
+bool arc_to_point(brain Brain, Drivetrain drivetrain, double initialPoint[2], double finalPoint[2], double radius, double velocity, bool direction, double timeout = 10.0) {
+    double turningAngle = acos(((pow(initialPoint[0] - finalPoint[0], 2) + pow(initialPoint[1] - finalPoint[1], 2)) / (-2 * pow(radius, 2))) + 1);
+    Brain.Screen.setCursor(5, 5);
+    Brain.Screen.print(turningAngle);
+    int turningDirection = -1;
+    if (direction) {turningDirection = 1;}
+    //figure out the direction to turn to before beginning
+    double leftDistanceTotal = turningAngle * (radius + turningDirection * Constants::WHEELBASE / 2.0);
+    double rightDistanceTotal = turningAngle * (radius - turningDirection * Constants::WHEELBASE / 2.0);
+    double angularVelocity = velocity / radius;
+    double leftVelocity = angularVelocity * (radius + turningDirection * Constants::WHEELBASE / 2.0);
+    double rightVelocity = angularVelocity * (radius - turningDirection * Constants::WHEELBASE / 2.0);
+    double leftSensitivity = 0.01 * leftDistanceTotal;
+    double rightSensitivity = 0.01 * rightDistanceTotal;
+    drivetrain.LeftSide.spin(forward);
+    drivetrain.RightSide.spin(forward);
+    double avgPercent = 0;
+    double startTime = Brain.Timer.time(seconds);
+    double ti = Brain.Timer.time(seconds);
+    double dt = 0;
+    double leftDistance = 0;
+    double rightDistance = 0;
+    double leftPercent = 0;
+    double rightPercent = 0;
+    //each side of the drivetrain must drive distance cm forward
+    while(avgPercent < 1.0 && ti - startTime < timeout) {
+        dt = Brain.Timer.time(seconds) - ti;
+        ti = Brain.Timer.time(seconds);
+        leftDistance = leftDistance + Constants::WHEEL_CIRC * drivetrain.LeftSide.velocity(rpm) * dt / 60.0;
+        rightDistance = rightDistance + Constants::WHEEL_CIRC * drivetrain.RightSide.velocity(rpm) * dt / 60.0;
+        //calculate percents
+        leftPercent = leftDistance / leftDistanceTotal;
+        rightPercent = rightDistance / rightDistanceTotal;
+        avgPercent = (leftPercent + rightPercent) / 2.0;
+        //adjust drive velocity based off of the percent difference from the average
+        drivetrain.LeftSide.setVelocity(leftVelocity + leftSensitivity * (avgPercent - leftPercent), percent);
+        drivetrain.RightSide.setVelocity(rightVelocity + rightSensitivity * (avgPercent - rightPercent), percent);
+    }
+    drivetrain.LeftSide.stop();
+    drivetrain.RightSide.stop();
+    return true;
+}
 
-//arced turn:
-//determine distance to travel by each side of the robot using the wheelbase
-//distance: r +- wheelbase times theta, theta in radians 
-
-//arc to point:
-//take in robot's current position, target position, and circle radius
-
-//
+bool turn_to(Drivetrain drivetrain, double angle, double velocity) {
+    double a = 360.0 - drivetrain.Inertial.rotation(degrees) - angle;
+    turnType direction;
+    if(a > 180) {
+        a = 360 - a;
+        direction = left;
+    } else if(a < -180) {
+        a += 360; 
+        direction = right;
+    } else if(a < 0) {
+        a = fabs(a);
+        direction = left;
+    } else {
+        direction = right;
+    }
+    if(direction == left) {
+        drivetrain.LeftSide.setVelocity(-1 * velocity, percent);
+        drivetrain.RightSide.setVelocity(velocity, percent);
+    } else {
+        drivetrain.LeftSide.setVelocity(velocity, percent);
+        drivetrain.RightSide.setVelocity(-1 * velocity, percent);
+    }
+    drivetrain.LeftSide.spin(forward);
+    drivetrain.RightSide.spin(forward);
+    while(fabs(drivetrain.Inertial.rotation(degrees) - angle) > 0.5) {
+        wait(10, msec);
+    }
+    return true;
+}
