@@ -18,9 +18,6 @@ class Drivetrain {
 
         double curve(double x);
         double max(double x, double y);
-        double getRotation() {
-            return (-Inertial.angle(degrees)) * Constants::TO_RADIANS;
-        }
 
     public:
 
@@ -37,7 +34,11 @@ class Drivetrain {
 
         //functions: 
         void updatePositions(double dt);
+        void setInitialPosition(double position[2]);
         void setMotorSpeeds(controller c);
+        double getRotation() {
+            return 2 * Constants::PI - (Inertial.heading(degrees) * Constants::TO_RADIANS);
+        }
 };
 
 #endif

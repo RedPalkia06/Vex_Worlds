@@ -3,6 +3,11 @@
 #include "constants.h"
 using namespace vex;
 
+void Drivetrain::setInitialPosition(double pos[2]) {
+  position[0] = pos[0];
+  position[1] = pos[1];
+}
+
 double Drivetrain::max(double x, double y) {
   if (x >= y) {
     return x;

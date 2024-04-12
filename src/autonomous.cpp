@@ -58,22 +58,22 @@ bool arc_to_point(brain Brain, Drivetrain drivetrain, double initialPoint[2], do
     double rightVelocity = angularVelocity * (radius - turningDirection * Constants::WHEELBASE / 2.0);
     double leftSensitivity = 0.01 * leftDistanceTotal;
     double rightSensitivity = 0.01 * rightDistanceTotal;
-    drivetrain.LeftSide.spin(forward);
-    drivetrain.RightSide.spin(forward);
     double avgPercent = 0;
     double startTime = Brain.Timer.time(seconds);
-    double ti = Brain.Timer.time(seconds);
+    double ti = startTime;
     double dt = 0;
     double leftDistance = 0;
     double rightDistance = 0;
     double leftPercent = 0;
     double rightPercent = 0;
+    drivetrain.LeftSide.spin(forward);
+    drivetrain.RightSide.spin(forward);
     //each side of the drivetrain must drive distance cm forward
     while(avgPercent < 1.0 && ti - startTime < timeout) {
         dt = Brain.Timer.time(seconds) - ti;
         ti = Brain.Timer.time(seconds);
-        leftDistance = leftDistance + Constants::WHEEL_CIRC * drivetrain.LeftSide.velocity(rpm) * dt / 60.0;
-        rightDistance = rightDistance + Constants::WHEEL_CIRC * drivetrain.RightSide.velocity(rpm) * dt / 60.0;
+        leftDistance += Constants::WHEEL_CIRC * drivetrain.LeftSide.velocity(rpm) * dt / 60.0;
+        rightDistance += Constants::WHEEL_CIRC * drivetrain.RightSide.velocity(rpm) * dt / 60.0;
         //calculate percents
         leftPercent = leftDistance / leftDistanceTotal;
         rightPercent = rightDistance / rightDistanceTotal;
@@ -88,7 +88,7 @@ bool arc_to_point(brain Brain, Drivetrain drivetrain, double initialPoint[2], do
 }
 
 bool turn_to(Drivetrain drivetrain, double angle, double velocity) {
-    double a = 360.0 - drivetrain.Inertial.rotation(degrees) - angle;
+    double a = drivetrain.getRotation() / Constants::TO_RADIANS - angle;
     turnType direction;
     if(a > 180) {
         a = 360 - a;
@@ -111,8 +111,10 @@ bool turn_to(Drivetrain drivetrain, double angle, double velocity) {
     }
     drivetrain.LeftSide.spin(forward);
     drivetrain.RightSide.spin(forward);
-    while(fabs(drivetrain.Inertial.rotation(degrees) - angle) > 0.5) {
-        wait(10, msec);
+    while(fabs(drivetrain.getRotation() / Constants::TO_RADIANS - angle) > 0.5) {
+        wait(1, msec);
     }
+    drivetrain.LeftSide.stop();
+    drivetrain.RightSide.stop();
     return true;
 }
