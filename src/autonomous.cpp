@@ -49,10 +49,12 @@ bool arc_to_point(brain Brain, Drivetrain drivetrain, double initialPoint[2], do
     Brain.Screen.setCursor(5, 5);
     Brain.Screen.print(turningAngle);
     int turningDirection = -1;
+    int drivingDirection = 1;
     if (direction) {turningDirection = 1;}
+    if (velocity < 0) {drivingDirection = -1;}
     //figure out the direction to turn to before beginning
-    double leftDistanceTotal = turningAngle * (radius + turningDirection * Constants::WHEELBASE / 2.0);
-    double rightDistanceTotal = turningAngle * (radius - turningDirection * Constants::WHEELBASE / 2.0);
+    double leftDistanceTotal = drivingDirection * turningAngle * (radius + turningDirection * Constants::WHEELBASE / 2.0);
+    double rightDistanceTotal = drivingDirection * turningAngle * (radius - turningDirection * Constants::WHEELBASE / 2.0);
     double angularVelocity = velocity / radius;
     double leftVelocity = angularVelocity * (radius + turningDirection * Constants::WHEELBASE / 2.0);
     double rightVelocity = angularVelocity * (radius - turningDirection * Constants::WHEELBASE / 2.0);
