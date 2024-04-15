@@ -6,11 +6,11 @@ using namespace vex;
 void launchLoop(controller Controller, motor m);
 void intake(motor m);
 void input(motor m);
-void stopIntake(motor m);
-void openWings(pneumatics p);
-void closeWings(pneumatics p);
+void stop_intake(motor m);
+void open_wings(pneumatics p);
+void close_wings(pneumatics p);
 void climb(pneumatics p);
-void climbDown(pneumatics p);
-void wingDown(pneumatics p);
-void wingUp(pneumatics p);
+void climb_down(pneumatics p);
+void wing_down(pneumatics p);
+void wing_up(pneumatics p);
 #endif

@@ -10,6 +10,7 @@ class Constants {
         static constexpr const float WHEEL_CIRC = WHEEL_RADIUS * 2.0 * PI;
         static constexpr const float TO_RADIANS = PI / 180.0;
         static constexpr const float WHEELBASE = 30.0;
+        const enum DIRECTION { CLOCKWISE, COUNTERCLOCKWISE };
 };
 
 #endif

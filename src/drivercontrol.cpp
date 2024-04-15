@@ -23,24 +23,24 @@ void input(motor m) {
     m.spin(reverse);
 }
 
-void stopIntake(motor m) {
+void stop_intake(motor m) {
     m.stop();
 }
 
 //wings
-void openWings(pneumatics p) {
+void open_wings(pneumatics p) {
     p.open();
 }
 
-void closeWings(pneumatics p) {
+void close_wings(pneumatics p) {
     p.close();
 }
 
-void wingDown(pneumatics p) {
+void wing_down(pneumatics p) {
     p.close();
 }
 
-void wingUp(pneumatics p) {
+void wing_up(pneumatics p) {
     p.open();
 }
 
@@ -50,6 +50,6 @@ void climb(pneumatics p) {
     p.close();
 }
 
-void climbDown(pneumatics p) {
+void climb_down(pneumatics p) {
     p.open();
 }

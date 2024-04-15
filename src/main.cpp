@@ -23,59 +23,25 @@ controller Controller1 = controller(primary);
 Drivetrain drivetrain1 = Drivetrain();
 motor Launcher = motor(PORT12, ratio36_1, true);
 motor Intake = motor(PORT10, ratio6_1, false);
+
+
+
 pneumatics Wings = pneumatics(Brain.ThreeWirePort.A);
 pneumatics SideWing = pneumatics(Brain.ThreeWirePort.B);
 pneumatics Climber = pneumatics(Brain.ThreeWirePort.H);
-/* Autonomous Code here 
-*  1 = No Auto
-*  2 = Offense
-*  3 = Defense
-*  4 = Skills
-*/
-void sixPieceAuto() {
-  //robot starts at (65, 25) heading 315 degrees
-  drivetrain1.setInitialPosition(new double[2] {25, 65});
-  drivetrain1.Inertial.setHeading(45, degrees);
-  //release triball from corner and set up preload
-  input(Intake);
-  drive_for(Brain, drivetrain1, 35, 25, 0.75);
-  Intake.stop();
-  wingDown(SideWing);
-  //reverse arc turn, do later
-  turn_to(drivetrain1, 135, 15);
-  intake(Intake);
-  drive_for(Brain, drivetrain1, 10, 15, 0.5);
-  Intake.stop();
-  wingUp(SideWing);
-  turn_to(drivetrain1, 315, 20);
-  input(Intake);
-  //get triball out of alley
-  turn_to(drivetrain1, 90, 20);
-  intake(Intake);
-  drive_for(Brain, drivetrain1, 70, 30, 1);
-  Intake.stop();
-  drive_for(Brain, drivetrain1, -70, -30, 1);
-  turn_to(drivetrain1, 135, 15);
-  //push 3 triballs into goal
-  //reverse arc turn to (90, 23)
-  turn_to(drivetrain1, 180, 30);
-  for(int i = 0; i < 3; i++) {
-    drive_for(Brain, drivetrain1, -12, 100, 0.25);
-    drive_for(Brain, drivetrain1, 12, 30, 0.4);
-  }
-  //get three center triballs
 
-
-}
 /*
 drive_for(brain, Drivetrain, distance, velocity, timeout);
 turn_to(Drivetrain, angle, velocity);
 arc_to_point(brain, Drivetrain, initialPoint[2], finalPoint[2], radius, velocity, bool direction, timeout);
 */
-//arc to point: true is right
+//arc to point: true is clockwise
 //current autos only use the basic autonomous functions, need to improve them for acceleration and simplicity
 
 void autonomous() {
+  drivetrain1.LeftSide.setStopping(brake);
+  drivetrain1.RightSide.setStopping(brake);
+  drivetrain1.arc_to_point(new double[2] {100, 200}, 0, 10, Constants::COUNTERCLOCKWISE, 10);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -101,12 +67,16 @@ void odometryLoop() {
     Brain.Screen.newLine();
     Brain.Screen.print(drivetrain1.position[1]);
     Brain.Screen.newLine();
-    Brain.Screen.print(drivetrain1.getRotation() / Constants::TO_RADIANS);
+    Brain.Screen.print(drivetrain1.getRotationDegrees());
   }
 }
 
 /* Run before autonomous is initialized */
 void preAutonomous() {
+  drivetrain1.Inertial.calibrate();
+  while(drivetrain1.Inertial.isCalibrating()) {
+    wait(10, msec);
+  }
   drivetrain1.Inertial.setHeading(270, degrees);
   Intake.setVelocity(100, percent);
   drivetrain1.LeftSide.spin(forward);
@@ -124,13 +94,13 @@ void inputCallback() {
   input(Intake);
 }
 void stopIntakeCallback() {
-  stopIntake(Intake);
+  stop_intake(Intake);
 }
 void openWingsCallback() {
-  openWings(Wings);
+  open_wings(Wings);
 }
 void closeWingsCallback() {
-  closeWings(Wings);
+  close_wings(Wings);
 }
 void launchLoopCallback() {
   launchLoop(Controller1, Launcher);
@@ -139,13 +109,13 @@ void climbCallback() {
   climb(Climber);
 }
 void climbDownCallback() {
-  climbDown(Climber);
+  climb_down(Climber);
 }
 void wingDownCallback() {
-  wingDown(SideWing);
+  wing_down(SideWing);
 }
 void wingUpCallback() {
-  wingUp(SideWing);
+  wing_up(SideWing);
 }
 
 void driverControl() {
@@ -165,7 +135,7 @@ void driverControl() {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
-    drivetrain1.setMotorSpeeds(Controller1);
+    drivetrain1.set_motor_speeds(Controller1);
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
