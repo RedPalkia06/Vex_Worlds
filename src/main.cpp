@@ -41,7 +41,7 @@ arc_to_point(brain, Drivetrain, initialPoint[2], finalPoint[2], radius, velocity
 void autonomous() {
   drivetrain1.LeftSide.setStopping(brake);
   drivetrain1.RightSide.setStopping(brake);
-  drivetrain1.arc_to_point(new double[2] {100, 200}, 0, 10, Constants::COUNTERCLOCKWISE, 10);
+  drivetrain1.arc_to_point(new double[2] {100, 200}, 0, 10, Constants::CLOCKWISE, 10);
 }
 
 /*---------------------------------------------------------------------------*/

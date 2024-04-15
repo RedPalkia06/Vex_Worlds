@@ -104,11 +104,11 @@ void Drivetrain::arc_to_point(double finalPoint[2], double radius, double veloci
 
 
     //figure out the direction to turn to before beginning
-    double leftDistanceTotal = turningAngle * (radius + turn_direction * Constants::WHEELBASE / 2.0);
-    double rightDistanceTotal = turningAngle * (radius - turn_direction * Constants::WHEELBASE / 2.0);
+    double leftDistanceTotal = turningAngle * (radius + direction * Constants::WHEELBASE / 2.0);
+    double rightDistanceTotal = turningAngle * (radius - direction * Constants::WHEELBASE / 2.0);
     double angularVelocity = velocity / radius;
-    double leftVelocity = angularVelocity * (radius + turn_direction * Constants::WHEELBASE / 2.0);
-    double rightVelocity = angularVelocity * (radius - turn_direction * Constants::WHEELBASE / 2.0);
+    double leftVelocity = angularVelocity * (radius + direction * Constants::WHEELBASE / 2.0);
+    double rightVelocity = angularVelocity * (radius - direction * Constants::WHEELBASE / 2.0);
 
     //normalize the velocities
     if(leftVelocity > 100 && leftVelocity > rightVelocity) {
