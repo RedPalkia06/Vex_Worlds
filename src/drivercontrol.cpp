@@ -27,22 +27,6 @@ void stop_intake(motor m) {
     m.stop();
 }
 
-//wings
-void open_wings(pneumatics p) {
-    p.open();
-}
-
-void close_wings(pneumatics p) {
-    p.close();
-}
-
-void wing_down(pneumatics p) {
-    p.close();
-}
-
-void wing_up(pneumatics p) {
-    p.open();
-}
 
 //climber
 

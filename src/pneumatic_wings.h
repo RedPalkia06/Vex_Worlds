@@ -11,9 +11,11 @@ class PneumaticWing {
         pneumatics solenoid;
         
     public:
-        void wings_out();
-        void wings_in();
-        void wings_toggle();
+        void out();
+        void in();
+        void up();
+        void down();
+        void toggle();
 
         // Constructor
         PneumaticWing(vex::triport::port port) : solenoid(port) {

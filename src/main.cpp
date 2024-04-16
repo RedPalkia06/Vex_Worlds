@@ -11,24 +11,27 @@
 #include "drivetrain.h"
 #include "drivercontrol.h"
 #include "autonomous.h"
+#include "pneumatic_wings.h"
+#include "climber.h"
 using namespace vex;
 
 brain Brain;
-
-// A global instance of competition
 competition Competition;
-
-// define your global instances of motors and other devices here
 controller Controller1 = controller(primary);
+
+// Subsystems
 Drivetrain drivetrain1 = Drivetrain();
+PneumaticWing horizontal_wings = PneumaticWing(Constants::HORIZONTAL_WINGS_PORT);
+PneumaticWing veritcal_wing = PneumaticWing(Brain.ThreeWirePort.B);
+Climber climber = Climber(Brain.ThreeWirePort.H);
+Launcher launcher = Launcher()
+
 motor Launcher = motor(PORT12, ratio36_1, true);
 motor Intake = motor(PORT10, ratio6_1, false);
 
 
 
-pneumatics Wings = pneumatics(Brain.ThreeWirePort.A);
-pneumatics SideWing = pneumatics(Brain.ThreeWirePort.B);
-pneumatics Climber = pneumatics(Brain.ThreeWirePort.H);
+
 
 /*
 drive_for(brain, Drivetrain, distance, velocity, timeout);
@@ -96,12 +99,6 @@ void inputCallback() {
 void stopIntakeCallback() {
   stop_intake(Intake);
 }
-void openWingsCallback() {
-  open_wings(Wings);
-}
-void closeWingsCallback() {
-  close_wings(Wings);
-}
 void launchLoopCallback() {
   launchLoop(Controller1, Launcher);
 }
@@ -111,33 +108,27 @@ void climbCallback() {
 void climbDownCallback() {
   climb_down(Climber);
 }
-void wingDownCallback() {
-  wing_down(SideWing);
-}
-void wingUpCallback() {
-  wing_up(SideWing);
-}
 
-void driverControl() {
+
+void register_controller_callbacks() {
   Controller1.ButtonL1.released(stopIntakeCallback);
   Controller1.ButtonL2.released(stopIntakeCallback);
   Controller1.ButtonL1.pressed(intakeCallback);
   Controller1.ButtonL2.pressed(inputCallback);
-  Controller1.ButtonA.pressed(openWingsCallback);
-  Controller1.ButtonB.pressed(closeWingsCallback);
+  Controller1.ButtonA.pressed([](){ horizontal_wings.out(); });
+  Controller1.ButtonB.pressed([](){ horizontal_wings.in(); });
   Controller1.ButtonUp.pressed(climbCallback);
   Controller1.ButtonDown.pressed(climbDownCallback);
-  Controller1.ButtonX.pressed(wingDownCallback);
-  Controller1.ButtonY.pressed(wingUpCallback);
+  Controller1.ButtonX.pressed([](){ veritcal_wing.down(); });
+  Controller1.ButtonY.pressed([](){ veritcal_wing.up(); });
+}
+
+void driverControl() {
   thread LaunchLoop = thread(launchLoopCallback);
-  // User control code here, inside the loop
+
   while (1) {
-    // This is the main execution loop for the user control program.
-    // Each time through the loop your program should update motor + servo
-    // values based on feedback from the joysticks.
     drivetrain1.set_motor_speeds(Controller1);
-    wait(20, msec); // Sleep the task for a short amount of time to
-                    // prevent wasted resources.
+    wait(20, msec);
   }
 }
 
@@ -153,6 +144,7 @@ int main() {
 
   // Run the pre-autonomous function.
   preAutonomous();
+  register_controller_callbacks();
 
   // Prevent main from exiting with an infinite loop.
   while (true) {
