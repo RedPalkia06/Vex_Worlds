@@ -8,9 +8,10 @@ class PneumaticWing {
     private:
         bool wings_are_out = false;
         void apply_wing_state();
-        pneumatics solenoid;
+        
         
     public:
+        pneumatics solenoid;
         void out();
         void in();
         void up();
@@ -18,7 +19,7 @@ class PneumaticWing {
         void toggle();
 
         // Constructor
-        PneumaticWing(vex::triport::port port) : solenoid(port) {
+        PneumaticWing(triport::port port) : solenoid(port) {
         }
 };
 #endif

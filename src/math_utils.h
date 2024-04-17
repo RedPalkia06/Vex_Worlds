@@ -9,6 +9,7 @@ class Math_Utils {
         static int normalize_angle(int angle);
         static double circleIntersectionX(double point[2], double otherPoint[2], double r, double d, int direction);
         static double circleIntersectionY(double point[2], double otherPoint[2], double r, double d, int direction);
-        static int calculate_optimal_turn(int current_angle, int target_angle);
+        static double calculate_optimal_turn(double current_angle, double target_angle);
+        static double mod(double a, double b);
 };
 #endif

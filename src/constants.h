@@ -15,23 +15,7 @@ public:
     static constexpr float TO_RADIANS = PI / 180.0;
     static constexpr float WHEELBASE = 30.0;
     enum DIRECTION { CLOCKWISE, COUNTERCLOCKWISE };
-    
-    // Define triport as a static member of the Constants class
-    static triport triport_;
-
-    // Define the triport ports using the triport object
-    static const triport::port HORIZONTAL_WINGS_SOLENOID_PORT;
-    static const triport::port VERTICAL_WING_SOLENOID_PORT;
-    static const triport::port CLIMBER_SOLENOID_PORT;
 
 };
-
-// Define the triport object outside the class and initialize the ports
-triport Constants::triport_ = triport(Brain.ThreeWirePort.A);
-
-// Define the triport port outside the class
-const triport::port Constants::HORIZONTAL_WINGS_SOLENOID_PORT = triport_.A;
-const triport::port Constants::VERTICAL_WING_SOLENOID_PORT = triport_.B;
-const triport::port Constants::CLIMBER_SOLENOID_PORT = triport_.C;
 
 #endif

@@ -1,12 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/*                                                                            */
-/*    Module:       main.cpp                                                  */
-/*    Author:       aislo                                                     */
-/*    Created:      3/7/2024, 6:07:47 PM                                      */
-/*    Description:  V5 project                                                */
-/*                                                                            */
-/*----------------------------------------------------------------------------*/
-
 #include "vex.h"
 #include "drivetrain.h"
 #include "drivercontrol.h"
@@ -20,17 +11,14 @@ competition Competition;
 controller Controller1 = controller(primary);
 
 // Subsystems
-Drivetrain drivetrain1 = Drivetrain();
-PneumaticWing horizontal_wings = PneumaticWing(Constants::HORIZONTAL_WINGS_PORT);
-PneumaticWing veritcal_wing = PneumaticWing(Brain.ThreeWirePort.B);
-Climber climber = Climber(Brain.ThreeWirePort.H);
-Launcher launcher = Launcher()
+Drivetrain drivetrain1 = Drivetrain(0.82, 0.0, 0.0, 0.0, 5/360.0, 10.0/360.0);
+pneumatics horizontal_wings = pneumatics(Brain.ThreeWirePort.A);
+pneumatics vertical_wing = pneumatics(Brain.ThreeWirePort.B);
+pneumatics climber = pneumatics(Brain.ThreeWirePort.H);
+//Launcher launcher = Launcher()
 
-motor Launcher = motor(PORT12, ratio36_1, true);
+//motor Launcher = motor(PORT12, ratio36_1, true);
 motor Intake = motor(PORT10, ratio6_1, false);
-
-
-
 
 
 /*
@@ -42,20 +30,8 @@ arc_to_point(brain, Drivetrain, initialPoint[2], finalPoint[2], radius, velocity
 //current autos only use the basic autonomous functions, need to improve them for acceleration and simplicity
 
 void autonomous() {
-  drivetrain1.LeftSide.setStopping(brake);
-  drivetrain1.RightSide.setStopping(brake);
-  drivetrain1.arc_to_point(new double[2] {100, 200}, 0, 10, Constants::CLOCKWISE, 10);
+  six_piece(drivetrain1, vertical_wing, horizontal_wings, Intake);
 }
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                              User Control Task                            */
-/*                                                                           */
-/*  This task is used to control your robot during the user control phase of */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
 
 void odometryLoop() {
   double dt = 0;
@@ -88,43 +64,32 @@ void preAutonomous() {
   //make sure wings are closed
   //reset climber, if necessary
 }
-
-//callbacks
+void stopIntakeCallback() {
+  Intake.stop();
+}
 void intakeCallback() {
-  intake(Intake);
+  Intake.spin(forward);
 }
 void inputCallback() {
-  input(Intake);
+  Intake.spin(reverse);
 }
-void stopIntakeCallback() {
-  stop_intake(Intake);
-}
-void launchLoopCallback() {
-  launchLoop(Controller1, Launcher);
-}
-void climbCallback() {
-  climb(Climber);
-}
-void climbDownCallback() {
-  climb_down(Climber);
-}
-
 
 void register_controller_callbacks() {
   Controller1.ButtonL1.released(stopIntakeCallback);
   Controller1.ButtonL2.released(stopIntakeCallback);
   Controller1.ButtonL1.pressed(intakeCallback);
   Controller1.ButtonL2.pressed(inputCallback);
-  Controller1.ButtonA.pressed([](){ horizontal_wings.out(); });
-  Controller1.ButtonB.pressed([](){ horizontal_wings.in(); });
-  Controller1.ButtonUp.pressed(climbCallback);
-  Controller1.ButtonDown.pressed(climbDownCallback);
-  Controller1.ButtonX.pressed([](){ veritcal_wing.down(); });
-  Controller1.ButtonY.pressed([](){ veritcal_wing.up(); });
+  
+  Controller1.ButtonA.pressed([](){ horizontal_wings.open(); });
+  Controller1.ButtonB.pressed([](){ horizontal_wings.close(); });
+  Controller1.ButtonUp.pressed([](){ climber.open(); });
+  Controller1.ButtonDown.pressed([](){ climber.close(); });
+  Controller1.ButtonX.pressed([](){ vertical_wing.close(); });
+  Controller1.ButtonY.pressed([](){ vertical_wing.open(); });
 }
 
 void driverControl() {
-  thread LaunchLoop = thread(launchLoopCallback);
+  //thread LaunchLoop = thread(launchLoopCallback);
 
   while (1) {
     drivetrain1.set_motor_speeds(Controller1);

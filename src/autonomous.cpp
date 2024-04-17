@@ -63,25 +63,30 @@ void six_piece_auto(Drivetrain drivetrain, PneumaticWing side_wing, PneumaticWin
     put down side wing
     turn
 */
-void six_piece(Drivetrain drivetrain, PneumaticWing side_wing, PneumaticWing horizontal_wing, motor intake) {
-  side_wing.wings_out();
+void six_piece(Drivetrain drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
+  drivetrain.set_initial_position(new double[2] {25, 65});
+  drivetrain.Inertial.setHeading(45, degrees);
+  vertical_wing.open();
   intake.spin(reverse);
-  drivetrain.arc_to_point(new double[2] {65, 35}, 45, 50, Constants::COUNTERCLOCKWISE, 0.5);
-  intake.stop();
-  side_wing.wings_in();
-  drivetrain.drive_for(-20, -25, 0.5);
-  drivetrain.turn_to(110, 30);
+  drivetrain.drive_for(75, 50, 0.5);
+  drivetrain.turn_toPID(0, 100);
   drivetrain.drive_for(40, 50, 0.5);
-  drivetrain.turn_to(90, 25);
+  //replace with arc turn later
+  intake.stop();
+  vertical_wing.close();
+  drivetrain.drive_for(-20, -25, 0.5);
+  drivetrain.turn_toPID(135, 100);
+  drivetrain.drive_for(80, 50, 0.5);
+  drivetrain.turn_toPID(90, 25);
   intake.spin(forward);
   drivetrain.drive_for(100, 60, 0.5);
-  drivetrain.turn_to(270, 30);
+  drivetrain.turn_toPID(270, 100);
   intake.spin(reverse);
   wait(0.25, seconds);
-  drivetrain.turn_to(90, 50);
+  drivetrain.turn_toPID(90, 100);
   intake.stop();
   drivetrain.drive_for(-100, -40, 0.5);
-  drivetrain.turn_to(135, 30);
+  drivetrain.turn_toPID(135, 100);
   drivetrain.drive_for(-50, 50, 0.5);
   drivetrain.arc_to_point(new double[2] {65, 35}, 45, -50, Constants::COUNTERCLOCKWISE, 0.5);
   drivetrain.drive_for(10, 100, 0.1);

@@ -11,9 +11,9 @@ int Math_Utils::normalize_angle(int angle) {
     return angle;
 }
 
-int Math_Utils::calculate_optimal_turn(int current_angle, int target_angle) {
-    current_angle %= 360;
-    target_angle %= 360;
+double Math_Utils::calculate_optimal_turn(double current_angle, double target_angle) {
+    current_angle = mod(current_angle, 360.0);
+    target_angle = mod(target_angle, 360.0);
 
     double anglular_difference = target_angle - current_angle;
     if(anglular_difference > 180) {
@@ -54,4 +54,28 @@ double Math_Utils::max(double x, double y) {
 
 double Math_Utils::curve(double x) {
   return (0.1 * x + 0.9 * pow(x, 3));
+}
+
+double Math_Utils::mod(double a, double b)
+{
+    double mod;
+    // Handling negative values
+    if (a < 0)
+        mod = -a;
+    else
+        mod =  a;
+    if (b < 0)
+        b = -b;
+
+    // Finding mod by repeated subtraction
+    
+    while (mod >= b)
+        mod = mod - b;
+
+    // Sign of result typically depends
+    // on sign of a.
+    if (a < 0)
+        return -mod;
+
+    return mod;
 }

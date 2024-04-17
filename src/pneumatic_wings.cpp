@@ -2,31 +2,31 @@
 
 void PneumaticWing::apply_wing_state() {
   if (wings_are_out) {
-    solenoid.open();
+    this->solenoid.open();
   } else {
-    solenoid.close();
+    this->solenoid.close();
   }
 }
 
 void PneumaticWing::out() {
-  wings_are_out = true;
-  apply_wing_state();
+  this->wings_are_out = true;
+  this->apply_wing_state();
 }
 
 void PneumaticWing::up() {
-  out();
+  this->out();
 }
 
 void PneumaticWing::in() {
-  wings_are_out = false;
-  apply_wing_state();
+  this->wings_are_out = false;
+  this->apply_wing_state();
 }
 
 void PneumaticWing::down() {
-  in();
+  this->in();
 }
 
 void PneumaticWing::toggle() {
-  wings_are_out = !wings_are_out;
-  apply_wing_state();
+  this->wings_are_out = !this->wings_are_out;
+  this->apply_wing_state();
 }

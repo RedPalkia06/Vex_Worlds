@@ -8,6 +8,6 @@
 #include "pneumatic_wings.h"
 #include <iostream>
 
-void six_piece_auto(Drivetrain drivetrain, PneumaticWing side_wing, PneumaticWing horizontal_wing, motor intake);
+void six_piece(Drivetrain drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake);
 
 #endif

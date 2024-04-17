@@ -97,7 +97,7 @@ void Drivetrain::arc_to_point(double finalPoint[2], double radius, double veloci
         turnToAngle += 180;
     }
     std::cout << centerX << " " << centerY << " " << turnToAngle << "\n";
-    turn_to(turnToAngle, velocity);
+    turn_toPID(turnToAngle, 100);
     double turningAngle = acos((pow(distanceBetweenPoints, 2) / (-2 * pow(radius, 2))) + 1);
     brain.Screen.setCursor(5, 5);
     brain.Screen.print(turningAngle);
@@ -173,6 +173,38 @@ void Drivetrain::turn_to(int angle, double velocity) {
         std::cout << "CH: " << getRotationDegrees() << std::endl;
         std::cout << "DH: " << angular_difference << std::endl;
         double power = delta_heading * -0.02;
+        LeftSide.setVelocity(power * velocity, percent);
+        RightSide.setVelocity(-power * velocity, percent);
+        wait(10, msec);
+    }
+    LeftSide.stop();
+    RightSide.stop();
+}
+
+void Drivetrain::turn_toPID(double angle, double velocity) { //for testing
+    angle += 2;
+    velocity = 100.0;
+    turningController.reset();
+
+    double angular_difference = Math_Utils::calculate_optimal_turn(getRotationDegrees(), angle);
+    double target_angle = getRotationDegrees() + angular_difference;
+    
+    turningController.setpoint = 0;
+
+    LeftSide.spin(forward);
+    RightSide.spin(forward);
+    double delta_heading = Math_Utils::calculate_optimal_turn(getRotationDegrees(), target_angle);
+    turningController.update(delta_heading / -360.0);
+    while(!turningController.at_setpoint()) {
+        delta_heading = Math_Utils::calculate_optimal_turn(getRotationDegrees(), target_angle);
+
+        std::cout << "CH: " << getRotationDegrees() << std::endl;
+        std::cout << "DH: " << delta_heading << std::endl;
+        double power = turningController.update(delta_heading / -360.0);
+        std::cout << "Integral: " << turningController._error_integral << std::endl;
+        std::cout << "PWR (PID): " << power << std::endl;
+
+        
         LeftSide.setVelocity(power * velocity, percent);
         RightSide.setVelocity(-power * velocity, percent);
         wait(10, msec);
