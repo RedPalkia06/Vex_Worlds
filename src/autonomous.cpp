@@ -70,12 +70,63 @@ void intake_delay() {
   intake.spin(reverse);
 }
 
+void five_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
+  brain brain;
+  double t_i = brain.Timer.time(seconds);
+  //drivetrain.set_initial_position(new double[2] {25, 90});
+  //drivetrain.Inertial.setHeading(270, degrees);
+  drivetrain.set_initial_position(new double[2] {25, 62});
+  drivetrain.Inertial.setHeading(45, degrees);
+  vertical_wing.open();
+  drivetrain.drive_for(15, 60, 0.6);
+  drivetrain.turn_to_test(20);
+  intake.spin(reverse);
+  drivetrain.drive_for(45, 100, 0.5);
+  drivetrain.drive_for(-20, -60, 0.5);
+  vertical_wing.close();
+  intake.spin(forward);
+  drivetrain.turn_to_test(270);
+  wait(0.3, seconds);
+  drivetrain.turn_to_test(350);
+  intake.spin(reverse);
+  drivetrain.drive_for(40, 100, 0.7);
+  intake.stop();
+  drivetrain.drive_for(-40, -50, 0.5);
+  intake.spin(forward);
+  drivetrain.drive_to_point(new double[2] {105, 100}, 60, 0.7);
+  drivetrain.drive_to_point(new double[2] {100, 150}, 60, 0.6);
+  drivetrain.turn_to_test(275, 1.2);
+  intake.setVelocity(75, percent);
+  intake.spin(reverse);
+  wait(0.6, seconds);
+  intake.setVelocity(100, percent);
+  intake.spin(forward);
+  drivetrain.drive_to_point(new double[2] {158, 150}, 80, 0.7);
+  drivetrain.turn_to_test(260, 1);
+  intake.setVelocity(75, percent);
+  intake.spin(reverse);
+  wait(0.5, seconds);
+  drivetrain.turn_toPID(80);
+  intake.stop();
+  intake.setVelocity(100, percent);
+  horizontal_wing.open();
+  drivetrain.drive_for(-120, -100, 0.8);
+  horizontal_wing.close();
+  drivetrain.drive_for(20, 20, 0.5);
+  brain.Screen.setCursor(10, 10);
+  brain.Screen.print(brain.Timer.time(seconds) - t_i);
+  drivetrain.LeftSide.setStopping(coast);
+  drivetrain.RightSide.setStopping(coast);
+  return;
+
+  //drive to center triball
+  
+}
 void six_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
   brain brain;
   double t_i = brain.Timer.time(seconds);
   drivetrain.set_initial_position(new double[2] {25, 90});
   drivetrain.Inertial.setHeading(270, degrees);
-
   intake.spin(forward);
   drivetrain.drive_for(-5, -100, 0.2);
   drivetrain.drive_to_point(new double[2] {25, 160}, 100, 0.75);
@@ -178,29 +229,6 @@ void max_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics ho
   touch bar
 */
 
-void safe_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
-  drivetrain.set_initial_position(new double[2] {110, 35});
-  drivetrain.Inertial.setHeading(0, degrees);
-
-  drivetrain.turn_toPID(135);
-  intake.spin(reverse);
-  wait(0.7, seconds);
-  drivetrain.drive_to_point(new double[2] {35, 70}, -50, 0.5);
-  drivetrain.drive_to_point(new double[2] {35, 120}, -100, 0.3);
-  drivetrain.drive_for(30, 25, 0.5);
-  drivetrain.turn_toPID(315);
-  vertical_wing.open();
-  drivetrain.drive_to_point(new double[2] {100, 40}, 40, 0.5);
-  drivetrain.turn_to_test(0);
-  drivetrain.drive_for(20, 50, 0.3);
-  drivetrain.drive_for(-40, -50, 0.5);
-  vertical_wing.close();
-  drivetrain.turn_to_test(180);
-  drivetrain.drive_for(-120, -60, 0.8);
-  vertical_wing.open();
-  drivetrain.turn_toPID(135);
-}
-
 /*
   Defense (safe)
   Start towards goal on angle bar
@@ -215,14 +243,46 @@ void safe_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics h
 */
 
 void auto_skills(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wings, motor intake, motor launcher, pneumatics climber) {
+  resetLauncher(launcher);
   horizontal_wings.open();
+  drivetrain.Inertial.setHeading(225, degrees);
   brain brain;
   brain.Timer.reset();
   while(brain.Timer.time(seconds) < 37) {
     launcher.spinFor(180, degrees);
-    wait(0.1, seconds);
+    wait(0.25, seconds);
   }
-  
+  drivetrain.Inertial.calibrate();
+  while(drivetrain.Inertial.isCalibrating()) {
+    wait(0.01, seconds);
+  }
+
+  horizontal_wings.close();
+  drivetrain.drive_for(100, 75, 1);
+  drivetrain.turn_to_test(185);
+  drivetrain.drive_for(40, 60, 0.5);
+  drivetrain.turn_toPID(90);
+  drivetrain.drive_for(150, 100, 2.5);
+  drivetrain.Inertial.setHeading(270, degrees);
+  drivetrain.turn_to_test(270);
+  horizontal_wings.open();
+  //first sweep
+  drivetrain.drive_for(-100, -100, 1);
+  //second sweep
+  horizontal_wings.close();
+  drivetrain.turn_toPID(310);
+  drivetrain.drive_for(100, 75, 1);
+  drivetrain.turn_toPID(270);
+  horizontal_wings.open();
+  drivetrain.drive_for(-150, -100, 1);
+  //third sweep
+  horizontal_wings.close();
+  drivetrain.turn_toPID(145);
+  drivetrain.drive_for(200, 75, 1.5);
+  drivetrain.turn_toPID(270);
+  horizontal_wings.open();
+  drivetrain.drive_for(-150, -100, 1);
+  horizontal_wings.close();
 }
 /*
   Skills auto

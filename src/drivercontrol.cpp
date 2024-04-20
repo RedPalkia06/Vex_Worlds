@@ -37,3 +37,8 @@ void climb(pneumatics p) {
 void climb_down(pneumatics p) {
     p.open();
 }
+
+void resetLauncher(motor &m) {
+    m.spinFor(forward, 20, degrees);
+    m.setStopping(hold);
+}

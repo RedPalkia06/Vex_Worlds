@@ -17,7 +17,7 @@ pneumatics vertical_wing = pneumatics(Brain.ThreeWirePort.B);
 pneumatics climber = pneumatics(Brain.ThreeWirePort.H);
 //Launcher launcher = Launcher()
 
-//motor Launcher = motor(PORT12, ratio36_1, true);
+motor Launcher = motor(PORT12, ratio36_1, true);
 motor Intake = motor(PORT10, ratio6_1, false);
 
 
@@ -48,7 +48,7 @@ void odometryLoop() {
 
 void autonomous() {
   //max_defense(drivetrain1, vertical_wing, horizontal_wings, Intake);
-  six_piece(drivetrain1, vertical_wing, horizontal_wings, Intake);
+  five_piece(drivetrain1, vertical_wing, horizontal_wings, Intake);
 }
 
 /* Run before autonomous is initialized */
@@ -62,8 +62,11 @@ void preAutonomous() {
   thread odometry = thread(odometryLoop);
   drivetrain1.LeftSide.spin(forward);
   drivetrain1.RightSide.spin(forward);
-  //make sure wings are closed
-  //reset climber, if necessary
+  resetLauncher(Launcher);
+}
+
+void launchLoopCallback() {
+  launchLoop(Controller1, Launcher);
 }
 void stopIntakeCallback() {
   Intake.stop();
@@ -90,11 +93,11 @@ void register_controller_callbacks() {
 }
 
 void driverControl() {
+  thread launch_loop = thread(launchLoopCallback);
   drivetrain1.LeftSide.spin(forward);
   drivetrain1.RightSide.spin(forward);
   drivetrain1.LeftSide.setStopping(coast);
   drivetrain1.RightSide.setStopping(coast);
-  //thread LaunchLoop = thread(launchLoopCallback);
 
   while (1) {
     drivetrain1.set_motor_speeds(Controller1);

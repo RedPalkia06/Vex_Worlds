@@ -3,6 +3,7 @@
 #include "vex.h"
 using namespace vex;
 
+void resetLauncher(motor &m);
 void launchLoop(controller Controller, motor m);
 void intake(motor m);
 void input(motor m);

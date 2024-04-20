@@ -14,6 +14,7 @@ public:
     static constexpr float WHEEL_CIRC = WHEEL_RADIUS * 2.0 * PI;
     static constexpr float TO_RADIANS = PI / 180.0;
     static constexpr float WHEELBASE = 30.0;
+    static constexpr float TURNING_CONSTANT = 0.8;
     enum DIRECTION { CLOCKWISE, COUNTERCLOCKWISE };
 
 };
