@@ -49,7 +49,7 @@ void odometryLoop() {
 void autonomous() {
   //auto_skills(drivetrain1, vertical_wing, horizontal_wings, Intake, Launcher, climber);
   //max_defense(drivetrain1, vertical_wing, horizontal_wings, Intake);
-  five_piece(drivetrain1, vertical_wing, horizontal_wings, Intake);
+  //five_piece(drivetrain1, vertical_wing, horizontal_wings, Intake);
 }
 
 /* Run before autonomous is initialized */

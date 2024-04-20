@@ -96,14 +96,14 @@ void five_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics hor
   drivetrain.drive_to_point(new double[2] {105, 100}, 60, 0.7);
   drivetrain.drive_to_point(new double[2] {100, 150}, 60, 0.6);
   drivetrain.turn_to_test(275, 1.2);
-  intake.setVelocity(60, percent);
+  intake.setVelocity(70, percent);
   intake.spin(reverse);
   wait(0.6, seconds);
   intake.setVelocity(100, percent);
   intake.spin(forward);
   drivetrain.drive_to_point(new double[2] {155, 150}, 80, 0.7);
   drivetrain.turn_to_test(260, 1);
-  intake.setVelocity(60, percent);
+  intake.setVelocity(70, percent);
   intake.spin(reverse);
   wait(0.5, seconds);
   drivetrain.turn_toPID(80);
@@ -192,6 +192,7 @@ void max_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics ho
   drivetrain.drive_for(-100, -50, 1.1);
   drivetrain.drive_for(20, 30, 0.3);
   //
+  intake.stop();
   drivetrain.drive_to_point(new double[2] {110, 105}, 60, 1); //70 35
   drivetrain.drive_to_point(new double[2] {65, 100}, -50, 1.2);
   drivetrain.turn_toPID(305);
@@ -207,6 +208,11 @@ void max_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics ho
   drivetrain.turn_toPID(155);
   brain.Screen.setCursor(10, 10);
   brain.Screen.print(brain.Timer.time(seconds) - t_i);
+}
+
+//fill in this function with stuff n things
+void safe_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
+
 }
 /*
   Defense (max points):

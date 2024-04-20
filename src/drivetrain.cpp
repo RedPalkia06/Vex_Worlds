@@ -49,6 +49,13 @@ void Drivetrain::updatePositions(double dt) {
 //get position function should return the average of each side of the robot
 //use basic code; if time, use something similar to Kalman filter
 
+/**
+ * Drives a certain distance forwards or backwards.
+ * IF THE DISTANCE IS NEGATIVE, MAKE THE VELOCITY NEGATIVE AS WELL.
+ * @param distance the distance the robot will drive. Can be negative to go backwards.
+ * @param velocity the velocity of the robot. Should be negative if the distance is negative
+ * @param timeout the timeout for the drive.
+*/
 void Drivetrain::drive_for(double distance, double velocity, double timeout = 10.0) {
     double sensitivity = 0.01 * distance;
     LeftSide.spin(forward);
@@ -164,6 +171,9 @@ void Drivetrain::arc_to_point(double finalPoint[2], double radius, double veloci
     RightSide.stop();
 }
 
+/**
+ * don't know why i haven't deleted this, don't use it
+*/
 void Drivetrain::turn_to(int angle, double velocity) {
     double angular_difference = Math_Utils::calculate_optimal_turn(getRotationDegrees(), angle);
     double target_angle = getRotationDegrees() + angular_difference;
@@ -184,7 +194,11 @@ void Drivetrain::turn_to(int angle, double velocity) {
     LeftSide.stop();
     RightSide.stop();
 }
-
+/**
+ * For smaller angles or turns that need to be more accurate
+ * @param angle angle to turn to
+ * @param velocity doesn't matter, always 100 but didn't feel like going through everything
+*/
 void Drivetrain::turn_toPID(double angle, double velocity) { //for testing
     angle += 8;
     velocity = 100.0;
@@ -217,6 +231,11 @@ void Drivetrain::turn_toPID(double angle, double velocity) { //for testing
     RightSide.stop();
 }
 
+/**
+ * @param finalPoint the target point in cm from 0, 0, which is determined at the start of each auto
+ * @param velocity the velocity it drives at, can be negative for the robot to go backwards to the point
+ * @param timeout the timeout
+*/
 void Drivetrain::drive_to_point(double finalPoint[2], double velocity, double timeout) {
     double angle = atan2(finalPoint[1] - position[1], finalPoint[0] - position[0]) / Constants::TO_RADIANS;
     if(velocity < 0) {
@@ -234,7 +253,12 @@ void Drivetrain::drive_to_point(double finalPoint[2], double velocity, double ti
         drive_for(distance, velocity, timeout);
     }
 }
-
+/**
+ * A much faster turning function, but MUCH less accurate and reliable. Doesn't work at very small angles either.
+ * @param target_angle the target angle to turn to.
+ * @param timeout the timeout
+ * 
+*/
 void Drivetrain::turn_to_test(double target_angle, double timeout) {
     double start_time = brain.Timer.time(seconds);
     double angle = Math_Utils::calculate_optimal_turn(getRotationDegrees(), target_angle);
