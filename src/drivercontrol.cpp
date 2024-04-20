@@ -2,15 +2,25 @@
 #include "drivercontrol.h"
 using namespace vex;
 
-void launchLoop(controller Controller, motor m) {
-    m.spinFor(forward, 90, degrees);
-    while (1) {
-    if(Controller.ButtonR1.pressing()) {
-        m.spinFor(forward, 90, degrees);
-        wait(200, msec);
-        m.spinFor(forward, 90, degrees);
+void endLaunching(motor m) {
+    if(m.isSpinning()) {
+        wait(1, seconds);
+        if(!m.isSpinning()) {
+            m.setStopping(coast);
+            return;
+        }
     }
-    wait(1, msec);
+}
+
+void launchLoop(controller Controller, motor m) {
+    while (1) {
+        m.setStopping(hold);
+        if(Controller.ButtonR1.pressing()) {
+            m.spinFor(forward, 90, degrees);
+            wait(250, msec);
+            m.spinFor(forward, 90, degrees);
+        }
+        wait(1, msec);
    }
 }
 

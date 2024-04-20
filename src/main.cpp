@@ -47,6 +47,7 @@ void odometryLoop() {
 }
 
 void autonomous() {
+  //auto_skills(drivetrain1, vertical_wing, horizontal_wings, Intake, Launcher, climber);
   //max_defense(drivetrain1, vertical_wing, horizontal_wings, Intake);
   five_piece(drivetrain1, vertical_wing, horizontal_wings, Intake);
 }
@@ -62,7 +63,10 @@ void preAutonomous() {
   thread odometry = thread(odometryLoop);
   drivetrain1.LeftSide.spin(forward);
   drivetrain1.RightSide.spin(forward);
-  resetLauncher(Launcher);
+}
+
+void endLaunchingCallback() {
+  endLaunching(Launcher);
 }
 
 void launchLoopCallback() {
@@ -79,6 +83,7 @@ void inputCallback() {
 }
 
 void register_controller_callbacks() {
+  Controller1.ButtonR1.released(endLaunchingCallback);
   Controller1.ButtonL1.released(stopIntakeCallback);
   Controller1.ButtonL2.released(stopIntakeCallback);
   Controller1.ButtonL1.pressed(intakeCallback);

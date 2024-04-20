@@ -87,7 +87,7 @@ void five_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics hor
   intake.spin(forward);
   drivetrain.turn_to_test(270);
   wait(0.3, seconds);
-  drivetrain.turn_to_test(350);
+  drivetrain.turn_to_test(340);
   intake.spin(reverse);
   drivetrain.drive_for(40, 100, 0.7);
   intake.stop();
@@ -96,14 +96,14 @@ void five_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics hor
   drivetrain.drive_to_point(new double[2] {105, 100}, 60, 0.7);
   drivetrain.drive_to_point(new double[2] {100, 150}, 60, 0.6);
   drivetrain.turn_to_test(275, 1.2);
-  intake.setVelocity(75, percent);
+  intake.setVelocity(60, percent);
   intake.spin(reverse);
   wait(0.6, seconds);
   intake.setVelocity(100, percent);
   intake.spin(forward);
-  drivetrain.drive_to_point(new double[2] {158, 150}, 80, 0.7);
+  drivetrain.drive_to_point(new double[2] {155, 150}, 80, 0.7);
   drivetrain.turn_to_test(260, 1);
-  intake.setVelocity(75, percent);
+  intake.setVelocity(60, percent);
   intake.spin(reverse);
   wait(0.5, seconds);
   drivetrain.turn_toPID(80);
@@ -244,20 +244,26 @@ void max_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics ho
 
 void auto_skills(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wings, motor intake, motor launcher, pneumatics climber) {
   resetLauncher(launcher);
-  horizontal_wings.open();
-  drivetrain.Inertial.setHeading(225, degrees);
+  drivetrain.drive_for(5, 50, 0.2);
+  drivetrain.drive_for(-10, -60, 0.5);
   brain brain;
-  brain.Timer.reset();
-  while(brain.Timer.time(seconds) < 37) {
+  double t_i = brain.Timer.time(seconds);
+  int i = 0;
+  while(brain.Timer.time(seconds) - t_i < 40) {
     launcher.spinFor(180, degrees);
     wait(0.25, seconds);
+    i++;
+    if(i == 5) {
+      drivetrain.drive_for(-5, -25, 0.2);
+      i = 0;
+    }
   }
   drivetrain.Inertial.calibrate();
   while(drivetrain.Inertial.isCalibrating()) {
     wait(0.01, seconds);
   }
-
-  horizontal_wings.close();
+  drivetrain.drive_for(-10, -30, 0.4);
+  drivetrain.Inertial.setHeading(225, degrees);
   drivetrain.drive_for(100, 75, 1);
   drivetrain.turn_to_test(185);
   drivetrain.drive_for(40, 60, 0.5);
@@ -266,23 +272,18 @@ void auto_skills(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics ho
   drivetrain.Inertial.setHeading(270, degrees);
   drivetrain.turn_to_test(270);
   horizontal_wings.open();
-  //first sweep
+  //sweep
   drivetrain.drive_for(-100, -100, 1);
-  //second sweep
-  horizontal_wings.close();
-  drivetrain.turn_toPID(310);
-  drivetrain.drive_for(100, 75, 1);
-  drivetrain.turn_toPID(270);
-  horizontal_wings.open();
-  drivetrain.drive_for(-150, -100, 1);
-  //third sweep
-  horizontal_wings.close();
-  drivetrain.turn_toPID(145);
-  drivetrain.drive_for(200, 75, 1.5);
-  drivetrain.turn_toPID(270);
-  horizontal_wings.open();
-  drivetrain.drive_for(-150, -100, 1);
-  horizontal_wings.close();
+  drivetrain.drive_for(100, 50, 0.5);
+  drivetrain.drive_for(-100, -100, 1);
+  drivetrain.drive_for(100, 50, 0.5);
+  drivetrain.LeftSide.spin(forward);
+  drivetrain.RightSide.spin(reverse);
+  drivetrain.LeftSide.setVelocity(100, percent);
+  drivetrain.RightSide.setVelocity(100, percent);
+  wait(4, seconds);
+  drivetrain.LeftSide.stop();
+  drivetrain.RightSide.stop();
 }
 /*
   Skills auto
