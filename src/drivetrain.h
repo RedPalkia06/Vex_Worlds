@@ -37,8 +37,10 @@ class Drivetrain {
         //functions: 
         void drive_for(double distance, double velocity, double timeout);
         void turn_to(int angle, double velocity);
-        void turn_toPID(double angle, double velocity); //for testing
+        void turn_toPID(double angle, double velocity = 100.0); //for testing
         void arc_to_point(double finalPoint[2], double radius, double velocity, Constants::DIRECTION turn_direction, double timeout);
+        void drive_to_point(double finalPoint[2], double velocity, double timeout);
+        void turn_to_test(double angle, double timeout = 0.8);
 
         void updatePositions(double dt);
         void set_initial_position(double position[2]);

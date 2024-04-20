@@ -17,6 +17,10 @@ double Drivetrain::getRotationRadians() {
 void Drivetrain::set_initial_position(double pos[2]) {
   position[0] = pos[0];
   position[1] = pos[1];
+  rightSidePosition[0] = pos[0];
+  rightSidePosition[1] = pos[1];
+  leftSidePosition[0] = pos[0];
+  leftSidePosition[1] = pos[1];
 }
 
 void Drivetrain::set_motor_speeds(controller c) {
@@ -32,13 +36,14 @@ void Drivetrain::set_motor_speeds(controller c) {
 }
 
 void Drivetrain::updatePositions(double dt) {
-  leftSidePosition[0] = leftSidePosition[0] + Constants::WHEEL_CIRC * RightSide.velocity(rpm) * dt * cos(getRotationDegrees())/ 60.0;
-  rightSidePosition[0] = rightSidePosition[0] + Constants::WHEEL_CIRC * LeftSide.velocity(rpm) * dt * cos(getRotationDegrees())/ 60.0;
+  leftSidePosition[0] += Constants::WHEEL_CIRC * RightSide.velocity(rpm) * dt * cos(getRotationRadians())/ 60.0;
+  rightSidePosition[0] += Constants::WHEEL_CIRC * LeftSide.velocity(rpm) * dt * cos(getRotationRadians())/ 60.0;
   position[0] = (leftSidePosition[0] + rightSidePosition[0]) / 2.0;
-  leftSidePosition[1] = leftSidePosition[1] + Constants::WHEEL_CIRC * RightSide.velocity(rpm) * dt * sin(getRotationDegrees())/ 60.0;
-  rightSidePosition[1] = rightSidePosition[1] + Constants::WHEEL_CIRC * LeftSide.velocity(rpm) * dt * sin(getRotationDegrees())/ 60.0;
+  leftSidePosition[1] += Constants::WHEEL_CIRC * RightSide.velocity(rpm) * dt * sin(getRotationRadians())/ 60.0;
+  rightSidePosition[1] += Constants::WHEEL_CIRC * LeftSide.velocity(rpm) * dt * sin(getRotationRadians())/ 60.0;
   position[1] = (leftSidePosition[1] + rightSidePosition[1]) / 2.0;
 }
+
 //odometry: should be inside the drivetrain class
 //drivetrain should have a position for each side of the robot
 //get position function should return the average of each side of the robot
@@ -97,19 +102,16 @@ void Drivetrain::arc_to_point(double finalPoint[2], double radius, double veloci
         turnToAngle += 180;
     }
     std::cout << centerX << " " << centerY << " " << turnToAngle << "\n";
-    turn_toPID(turnToAngle, 100);
-    double turningAngle = acos((pow(distanceBetweenPoints, 2) / (-2 * pow(radius, 2))) + 1);
-    brain.Screen.setCursor(5, 5);
-    brain.Screen.print(turningAngle);
 
+    double turningAngle = acos((pow(distanceBetweenPoints, 2) / (-2 * pow(radius, 2))) + 1);
 
     //figure out the direction to turn to before beginning
-    double leftDistanceTotal = turningAngle * (radius + direction * Constants::WHEELBASE / 2.0);
-    double rightDistanceTotal = turningAngle * (radius - direction * Constants::WHEELBASE / 2.0);
+    double leftDistanceTotal = turningAngle * (radius + direction * 45.0 / 2.0);
+    double rightDistanceTotal = turningAngle * (radius - direction * 45.0 / 2.0);
     double angularVelocity = velocity / radius;
-    double leftVelocity = angularVelocity * (radius + direction * Constants::WHEELBASE / 2.0);
-    double rightVelocity = angularVelocity * (radius - direction * Constants::WHEELBASE / 2.0);
-
+    double leftVelocity = angularVelocity * (radius + direction * 45.0 / 2.0);
+    double rightVelocity = angularVelocity * (radius - direction * 45.0 / 2.0);
+    
     //normalize the velocities
     if(leftVelocity > 100 && leftVelocity > rightVelocity) {
         leftVelocity = 100;
@@ -130,8 +132,10 @@ void Drivetrain::arc_to_point(double finalPoint[2], double radius, double veloci
         turnToAngle += 180;
     }
 
-    double leftSensitivity = 0.01 * fabs(leftDistanceTotal);
-    double rightSensitivity = 0.01 * fabs(rightDistanceTotal);
+    turn_to_test(turnToAngle);
+    
+    double leftSensitivity = 0.01 * leftDistanceTotal;
+    double rightSensitivity = 0.01 * rightDistanceTotal;
     double avgPercent = 0;
     double startTime = brain.Timer.time(seconds);
     double ti = startTime;
@@ -182,7 +186,7 @@ void Drivetrain::turn_to(int angle, double velocity) {
 }
 
 void Drivetrain::turn_toPID(double angle, double velocity) { //for testing
-    angle += 2;
+    angle += 8;
     velocity = 100.0;
     turningController.reset();
 
@@ -209,6 +213,60 @@ void Drivetrain::turn_toPID(double angle, double velocity) { //for testing
         RightSide.setVelocity(-power * velocity, percent);
         wait(10, msec);
     }
+    LeftSide.stop();
+    RightSide.stop();
+}
+
+void Drivetrain::drive_to_point(double finalPoint[2], double velocity, double timeout) {
+    double angle = atan2(finalPoint[1] - position[1], finalPoint[0] - position[0]) / Constants::TO_RADIANS;
+    if(velocity < 0) {
+        angle += 180;
+    }
+    turn_to_test(angle);
+    
+    double distance = sqrt(pow(finalPoint[0] - position[0], 2) + pow(finalPoint[1] - position[1], 2));
+    std::cout << distance << " = distance" << std::endl;
+    std::cout << position[0] << " " << position[1] << std::endl;
+    std::cout << finalPoint[0] << " " << finalPoint[1] << std::endl;
+    if(velocity < 0) {
+        drive_for(-1.0 * distance, velocity, timeout);
+    } else {
+        drive_for(distance, velocity, timeout);
+    }
+}
+
+void Drivetrain::turn_to_test(double target_angle, double timeout) {
+    double start_time = brain.Timer.time(seconds);
+    double angle = Math_Utils::calculate_optimal_turn(getRotationDegrees(), target_angle);
+    brain.Screen.setCursor(6, 6);
+    brain.Screen.print(target_angle);
+    int direction;
+    if(angle > 0) {
+        direction = 1;
+    } else {
+        direction = -1;
+    }
+    LeftSide.spin(forward);
+    RightSide.spin(forward);
+    std::cout << angle;
+    if(fabs(angle) <= 25 && fabs(angle) > 5) {
+        turn_toPID(target_angle);
+        return;
+    }
+    while(fabs(angle) > 20 && brain.Timer.time(seconds) - start_time < timeout) {
+        LeftSide.setVelocity((-1 * direction * (3 + 97 * pow((angle), 2) / 32400.0)), percent);
+        RightSide.setVelocity((direction * (3 + 97 * pow((angle), 2) / 32400.0)), percent);
+        angle = Math_Utils::calculate_optimal_turn(getRotationDegrees(), target_angle);
+        if(angle < 0) {
+            direction = -1;
+        } else if(angle > 0) {
+            direction = 1;
+        }
+        std::cout << angle << std::endl;
+        wait(10, msec);
+    }
+    LeftSide.setStopping(hold);
+    RightSide.setStopping(hold);
     LeftSide.stop();
     RightSide.stop();
 }

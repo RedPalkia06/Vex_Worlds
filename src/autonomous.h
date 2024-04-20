@@ -8,6 +8,8 @@
 #include "pneumatic_wings.h"
 #include <iostream>
 
-void six_piece(Drivetrain drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake);
+void six_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake);
+void max_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake);
+void safe_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake);
 
 #endif

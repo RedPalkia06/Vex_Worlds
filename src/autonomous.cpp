@@ -63,40 +63,100 @@ void six_piece_auto(Drivetrain drivetrain, PneumaticWing side_wing, PneumaticWin
     put down side wing
     turn
 */
-void six_piece(Drivetrain drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
-  drivetrain.set_initial_position(new double[2] {25, 65});
-  drivetrain.Inertial.setHeading(45, degrees);
-  vertical_wing.open();
+void intake_delay() {
+  motor intake = motor(PORT10, ratio6_1, false);
+  intake.setVelocity(100, percent);
+  wait(0.5, seconds);
   intake.spin(reverse);
-  drivetrain.drive_for(75, 50, 0.5);
-  drivetrain.turn_toPID(0, 100);
-  drivetrain.drive_for(40, 50, 0.5);
-  //replace with arc turn later
-  intake.stop();
-  vertical_wing.close();
-  drivetrain.drive_for(-20, -25, 0.5);
-  drivetrain.turn_toPID(135, 100);
-  drivetrain.drive_for(80, 50, 0.5);
-  drivetrain.turn_toPID(90, 25);
+}
+
+void six_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
+  brain brain;
+  double t_i = brain.Timer.time(seconds);
+  drivetrain.set_initial_position(new double[2] {25, 90});
+  drivetrain.Inertial.setHeading(270, degrees);
+
   intake.spin(forward);
-  drivetrain.drive_for(100, 60, 0.5);
-  drivetrain.turn_toPID(270, 100);
+  drivetrain.drive_for(-5, -100, 0.2);
+  drivetrain.drive_to_point(new double[2] {25, 160}, 100, 0.75);
+  drivetrain.drive_to_point(new double[2] {25, 90}, -50, 0.5);
+  thread delayIntake = thread(intake_delay);
+  drivetrain.drive_to_point(new double[2] {35, 82}, 30, 1);
+  drivetrain.turn_to_test(319);
+  wait(0.1, seconds);
+  vertical_wing.open();
+  drivetrain.drive_for(47, 50, 0.5);
+  drivetrain.turn_to_test(30);
+  drivetrain.drive_for(15, 50, 0.3);
+  vertical_wing.close();
+  wait(0.05, seconds);
+  drivetrain.turn_to_test(90);
+  drivetrain.turn_to_test(160);
+  drivetrain.drive_for(-40, -50, 0.5);
+  drivetrain.drive_for(70, 60, 0.4);
+  wait(0.1, seconds);
+  intake.spin(forward);
+  //might have to change drive_to_points into turn_to and drive_for at some point
+  drivetrain.drive_to_point(new double[2] {120, 155}, 70, 1.0);
+  drivetrain.turn_to_test(280, 1.2);
   intake.spin(reverse);
-  wait(0.25, seconds);
-  drivetrain.turn_toPID(90, 100);
+  wait(0.6, seconds);
+  intake.spin(reverse);
+  drivetrain.drive_to_point(new double[2] {135, 140}, 80, 0.8);
+  drivetrain.turn_to_test(75);
   intake.stop();
-  drivetrain.drive_for(-100, -40, 0.5);
-  drivetrain.turn_toPID(135, 100);
-  drivetrain.drive_for(-50, 50, 0.5);
-  drivetrain.arc_to_point(new double[2] {65, 35}, 45, -50, Constants::COUNTERCLOCKWISE, 0.5);
-  drivetrain.drive_for(10, 100, 0.1);
-  drivetrain.drive_for(-20, -100, 0.2);
-  drivetrain.drive_for(10, 30, 0.5);
+  horizontal_wing.open();
+  drivetrain.drive_for(-120, -100, 0.8);
+  horizontal_wing.close();
+  drivetrain.drive_for(20, 20, 0.5);
+  brain.Screen.setCursor(10, 10);
+  brain.Screen.print(brain.Timer.time(seconds) - t_i);
+  drivetrain.LeftSide.setStopping(coast);
+  drivetrain.RightSide.setStopping(coast);
+  return;
 
   //drive to center triball
   
 }
 
+void max_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
+  brain brain;
+  double t_i = brain.Timer.time(seconds);
+  drivetrain.set_initial_position(new double[2] {110, 35});
+  drivetrain.Inertial.setHeading(90, degrees);
+  intake.spin(forward);
+  drivetrain.drive_for(-5, -50, 0.2);
+  wait(0.3, seconds);
+  drivetrain.drive_to_point(new double[2] {108, 105}, -30, 1);
+  drivetrain.turn_to_test(215);
+  horizontal_wing.open();
+  drivetrain.drive_for(-25, -80, 1);
+  drivetrain.turn_to_test(165);
+  intake.setVelocity(60, percent);
+  intake.spin(reverse);
+  wait(0.2, seconds);
+  drivetrain.drive_for(-60, -100, 0.7);
+  horizontal_wing.close();
+  drivetrain.turn_to_test(20);
+  drivetrain.drive_for(-100, -50, 1.1);
+  drivetrain.drive_for(20, 30, 0.3);
+  //
+  drivetrain.drive_to_point(new double[2] {110, 105}, 60, 1); //70 35
+  drivetrain.drive_to_point(new double[2] {65, 100}, -50, 1.2);
+  drivetrain.turn_toPID(305);
+  vertical_wing.open();
+  drivetrain.drive_to_point(new double[2] {75, 30}, 40, 0.8);
+  drivetrain.turn_to_test(20);
+  drivetrain.drive_for(30, 50, 0.7);
+  drivetrain.drive_for(-30, -50, 0.5);
+  vertical_wing.close();
+  drivetrain.turn_toPID(173);
+  drivetrain.drive_for(-56, -60, 1.2);
+  vertical_wing.open();
+  drivetrain.turn_toPID(155);
+  brain.Screen.setCursor(10, 10);
+  brain.Screen.print(brain.Timer.time(seconds) - t_i);
+}
 /*
   Defense (max points):
   Start towards goal on angle bar
@@ -118,6 +178,29 @@ void six_piece(Drivetrain drivetrain, pneumatics vertical_wing, pneumatics horiz
   touch bar
 */
 
+void safe_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
+  drivetrain.set_initial_position(new double[2] {110, 35});
+  drivetrain.Inertial.setHeading(0, degrees);
+
+  drivetrain.turn_toPID(135);
+  intake.spin(reverse);
+  wait(0.7, seconds);
+  drivetrain.drive_to_point(new double[2] {35, 70}, -50, 0.5);
+  drivetrain.drive_to_point(new double[2] {35, 120}, -100, 0.3);
+  drivetrain.drive_for(30, 25, 0.5);
+  drivetrain.turn_toPID(315);
+  vertical_wing.open();
+  drivetrain.drive_to_point(new double[2] {100, 40}, 40, 0.5);
+  drivetrain.turn_to_test(0);
+  drivetrain.drive_for(20, 50, 0.3);
+  drivetrain.drive_for(-40, -50, 0.5);
+  vertical_wing.close();
+  drivetrain.turn_to_test(180);
+  drivetrain.drive_for(-120, -60, 0.8);
+  vertical_wing.open();
+  drivetrain.turn_toPID(135);
+}
+
 /*
   Defense (safe)
   Start towards goal on angle bar
@@ -131,6 +214,16 @@ void six_piece(Drivetrain drivetrain, pneumatics vertical_wing, pneumatics horiz
   touch bar
 */
 
+void auto_skills(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wings, motor intake, motor launcher, pneumatics climber) {
+  horizontal_wings.open();
+  brain brain;
+  brain.Timer.reset();
+  while(brain.Timer.time(seconds) < 37) {
+    launcher.spinFor(180, degrees);
+    wait(0.1, seconds);
+  }
+  
+}
 /*
   Skills auto
   Lock into side bar with wings

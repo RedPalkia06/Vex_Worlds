@@ -29,10 +29,6 @@ arc_to_point(brain, Drivetrain, initialPoint[2], finalPoint[2], radius, velocity
 //arc to point: true is clockwise
 //current autos only use the basic autonomous functions, need to improve them for acceleration and simplicity
 
-void autonomous() {
-  six_piece(drivetrain1, vertical_wing, horizontal_wings, Intake);
-}
-
 void odometryLoop() {
   double dt = 0;
   double ti = Brain.Timer.time(seconds);
@@ -50,6 +46,11 @@ void odometryLoop() {
   }
 }
 
+void autonomous() {
+  //max_defense(drivetrain1, vertical_wing, horizontal_wings, Intake);
+  six_piece(drivetrain1, vertical_wing, horizontal_wings, Intake);
+}
+
 /* Run before autonomous is initialized */
 void preAutonomous() {
   drivetrain1.Inertial.calibrate();
@@ -58,9 +59,9 @@ void preAutonomous() {
   }
   drivetrain1.Inertial.setHeading(270, degrees);
   Intake.setVelocity(100, percent);
+  thread odometry = thread(odometryLoop);
   drivetrain1.LeftSide.spin(forward);
   drivetrain1.RightSide.spin(forward);
-  thread odometry = thread(odometryLoop);
   //make sure wings are closed
   //reset climber, if necessary
 }
@@ -89,6 +90,10 @@ void register_controller_callbacks() {
 }
 
 void driverControl() {
+  drivetrain1.LeftSide.spin(forward);
+  drivetrain1.RightSide.spin(forward);
+  drivetrain1.LeftSide.setStopping(coast);
+  drivetrain1.RightSide.setStopping(coast);
   //thread LaunchLoop = thread(launchLoopCallback);
 
   while (1) {
