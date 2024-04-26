@@ -89,7 +89,7 @@ void five_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics hor
   wait(0.3, seconds);
   drivetrain.turn_to_test(340);
   intake.spin(reverse);
-  drivetrain.drive_for(40, 100, 0.7);
+  drivetrain.drive_for(50, 100, 0.7);
   intake.stop();
   drivetrain.drive_for(-40, -50, 0.5);
   intake.spin(forward);
@@ -101,7 +101,7 @@ void five_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics hor
   wait(0.6, seconds);
   intake.setVelocity(100, percent);
   intake.spin(forward);
-  drivetrain.drive_to_point(new double[2] {155, 150}, 80, 0.7);
+  drivetrain.drive_to_point(new double[2] {147, 150}, 80, 0.7);
   drivetrain.turn_to_test(260, 1);
   intake.setVelocity(70, percent);
   intake.spin(reverse);
@@ -179,25 +179,25 @@ void max_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics ho
   drivetrain.drive_for(-5, -50, 0.2);
   wait(0.3, seconds);
   drivetrain.drive_to_point(new double[2] {108, 105}, -30, 1);
-  drivetrain.turn_to_test(215);
+  drivetrain.turn_to_test(205);
   horizontal_wing.open();
-  drivetrain.drive_for(-25, -80, 1);
-  drivetrain.turn_to_test(165);
+  drivetrain.drive_for(-20, -80, 1);
+  drivetrain.turn_to_test(165, 1.3);
   intake.setVelocity(60, percent);
   intake.spin(reverse);
   wait(0.2, seconds);
   drivetrain.drive_for(-60, -100, 0.7);
   horizontal_wing.close();
-  drivetrain.turn_to_test(20);
+  drivetrain.turn_toPID(0, 1.3);
   drivetrain.drive_for(-100, -50, 1.1);
-  drivetrain.drive_for(20, 30, 0.3);
+  drivetrain.drive_for(20, 30, 0.35);
   //
   intake.stop();
-  drivetrain.drive_to_point(new double[2] {110, 105}, 60, 1); //70 35
-  drivetrain.drive_to_point(new double[2] {65, 100}, -50, 1.2);
-  drivetrain.turn_toPID(305);
+  drivetrain.drive_to_point(new double[2] {110, 85}, 60, 1); //70 35
+  drivetrain.drive_to_point(new double[2] {70, 90}, -50, 1.2);
+  drivetrain.turn_to_test(305);
   vertical_wing.open();
-  drivetrain.drive_to_point(new double[2] {75, 30}, 40, 0.8);
+  drivetrain.drive_to_point(new double[2] {85, 30}, 40, 0.8);
   drivetrain.turn_to_test(20);
   drivetrain.drive_for(30, 50, 0.7);
   drivetrain.drive_for(-30, -50, 0.5);
@@ -212,7 +212,27 @@ void max_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics ho
 
 //fill in this function with stuff n things
 void safe_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
-
+  brain brain;
+  double t_i = brain.Timer.time(seconds);
+  drivetrain.set_initial_position(new double[2] {110, 35});
+  drivetrain.Inertial.setHeading(270, degrees);
+  drivetrain.drive_to_point(new double[2] {75, 80}, -50, 1.2);
+  drivetrain.turn_to_test(270);
+  drivetrain.drive_for(-30, -80, 0.5);
+  drivetrain.drive_for(30, 40, 0.5);
+  drivetrain.turn_to_test(305);
+  vertical_wing.open();
+  drivetrain.drive_to_point(new double[2] {100, 35}, 40, 1);
+  drivetrain.turn_to_test(0);
+  drivetrain.drive_for(30, 50, 0.7);
+  drivetrain.drive_for(-30, -50, 0.5);
+  vertical_wing.close();
+  drivetrain.turn_toPID(173);
+  drivetrain.drive_for(-56, -60, 1.2);
+  vertical_wing.open();
+  drivetrain.turn_toPID(155);
+  brain.Screen.setCursor(10, 10);
+  brain.Screen.print(brain.Timer.time(seconds) - t_i);
 }
 /*
   Defense (max points):

@@ -20,6 +20,7 @@ pneumatics climber = pneumatics(Brain.ThreeWirePort.H);
 motor Launcher = motor(PORT12, ratio36_1, true);
 motor Intake = motor(PORT10, ratio6_1, false);
 
+Constants::AUTONOMOUS autonomous_index = Constants::AUTONOMOUS::NONE;
 
 /*
 drive_for(brain, Drivetrain, distance, velocity, timeout);
@@ -47,9 +48,18 @@ void odometryLoop() {
 }
 
 void autonomous() {
-  //auto_skills(drivetrain1, vertical_wing, horizontal_wings, Intake, Launcher, climber);
-  //max_defense(drivetrain1, vertical_wing, horizontal_wings, Intake);
-  //five_piece(drivetrain1, vertical_wing, horizontal_wings, Intake);
+  if (autonomous_index == Constants::AUTONOMOUS::NONE) {}
+  else if (autonomous_index == Constants::AUTONOMOUS::DISRUPT_DEFENSE) {
+    max_defense(drivetrain1, vertical_wing, horizontal_wings, Intake);
+  } else if (autonomous_index == Constants::AUTONOMOUS::OFFENSE) {
+    five_piece(drivetrain1, vertical_wing, horizontal_wings, Intake);
+  }else if (autonomous_index == Constants::AUTONOMOUS::SAFE_DEFENSE) {
+
+  } else if (autonomous_index == Constants::AUTONOMOUS::SKILLS) {
+    auto_skills(drivetrain1, vertical_wing, horizontal_wings, Intake, Launcher, climber);
+  }
+  
+   
 }
 
 /* Run before autonomous is initialized */
@@ -58,6 +68,87 @@ void preAutonomous() {
   while(drivetrain1.Inertial.isCalibrating()) {
     wait(10, msec);
   }
+
+  int column_width = 480.0 / 5.0;
+
+  
+
+
+  while(true) {
+    Brain.Screen.setFillColor(color::blue);
+    Brain.Screen.drawRectangle(0, 0, column_width, 272);
+    
+    Brain.Screen.setFillColor(color::red);
+    Brain.Screen.drawRectangle(column_width, 0, column_width, 272);
+    Brain.Screen.setFillColor(color::orange);
+    Brain.Screen.drawRectangle(2 * column_width, 0, column_width, 272);
+    Brain.Screen.setFillColor(color::purple);
+    Brain.Screen.drawRectangle(3 * column_width, 0, column_width, 272);
+    Brain.Screen.setFillColor(color::yellow);
+    Brain.Screen.drawRectangle(4 * column_width, 0, column_width, 272);
+    Brain.Screen.setFillColor(color::black);
+    
+    while (!Brain.Screen.pressing()) {}
+
+    double press_x = Brain.Screen.xPosition();
+    double press_y = Brain.Screen.yPosition();
+
+    std::cout << "X: " << press_x << std::endl;
+    std::cout << "Y: " << press_y << std::endl;
+    std::cout << "Width: " << column_width << std::endl;
+
+  //  480*272
+
+
+    if (0 < press_x && press_x < column_width) {
+      autonomous_index = Constants::AUTONOMOUS::NONE;
+    } else if (column_width < press_x && press_x < 2 * column_width) {
+      autonomous_index = Constants::AUTONOMOUS::DISRUPT_DEFENSE;
+    } else if (2 * column_width < press_x && press_x < 3 * column_width) {
+      autonomous_index = Constants::AUTONOMOUS::OFFENSE;
+    } else if (3 * column_width < press_x && press_x < 4 * column_width) {
+      autonomous_index = Constants::AUTONOMOUS::SAFE_DEFENSE;
+    } else if (4 * column_width < press_x && press_x < 5 * column_width) {
+      autonomous_index = Constants::AUTONOMOUS::SKILLS;
+    } else {
+      std::cout << "This should never happen" << std::endl;
+    }
+
+    switch (autonomous_index)
+    {
+    case Constants::AUTONOMOUS::NONE:
+      Brain.Screen.print("None");
+      break;
+    case Constants::AUTONOMOUS::DISRUPT_DEFENSE :
+      Brain.Screen.print("Distrupt Defense");
+      break;
+    case Constants::AUTONOMOUS::OFFENSE :
+      Brain.Screen.print("Offense");
+      break;
+    case Constants::AUTONOMOUS::SAFE_DEFENSE :
+      Brain.Screen.print("Safe Defense");
+      break;
+    case Constants::AUTONOMOUS::SKILLS :
+      Brain.Screen.print("Skills");
+      break;
+    }
+    Brain.Screen.newLine();
+    Brain.Screen.print("Press A to accept, B to cancel");
+    Brain.Screen.newLine();
+
+    while (!Controller1.ButtonA.pressing() && !Controller1.ButtonB.pressing()) {}
+    if (Controller1.ButtonA.pressing()) {
+      Brain.Screen.print("Finalized autonomous");
+      wait(1000, msec);
+      break;
+    } else if (Controller1.ButtonB.pressing()) {
+      Brain.Screen.print("Canceled Selection");
+      wait(1000, msec);
+    }
+    Brain.Screen.clearScreen();
+  }
+
+
   drivetrain1.Inertial.setHeading(270, degrees);
   Intake.setVelocity(100, percent);
   thread odometry = thread(odometryLoop);
@@ -83,7 +174,6 @@ void inputCallback() {
 }
 
 void register_controller_callbacks() {
-  Controller1.ButtonR1.released(endLaunchingCallback);
   Controller1.ButtonL1.released(stopIntakeCallback);
   Controller1.ButtonL2.released(stopIntakeCallback);
   Controller1.ButtonL1.pressed(intakeCallback);
@@ -98,6 +188,8 @@ void register_controller_callbacks() {
 }
 
 void driverControl() {
+
+  resetLauncher(Launcher);
   thread launch_loop = thread(launchLoopCallback);
   drivetrain1.LeftSide.spin(forward);
   drivetrain1.RightSide.spin(forward);
