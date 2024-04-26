@@ -49,8 +49,8 @@ void odometryLoop() {
 
 void autonomous() {
   if (autonomous_index == Constants::AUTONOMOUS::NONE) {}
-  else if (autonomous_index == Constants::AUTONOMOUS::DISRUPT_DEFENSE) {
-    max_defense(drivetrain1, vertical_wing, horizontal_wings, Intake);
+  else if (autonomous_index == Constants::AUTONOMOUS::SAFE_OFFENSE) {
+    safe_auto(drivetrain1, vertical_wing, horizontal_wings, Intake);
   } else if (autonomous_index == Constants::AUTONOMOUS::OFFENSE) {
     five_piece(drivetrain1, vertical_wing, horizontal_wings, Intake);
   }else if (autonomous_index == Constants::AUTONOMOUS::SAFE_DEFENSE) {
@@ -103,7 +103,7 @@ void preAutonomous() {
     if (0 < press_x && press_x < column_width) {
       autonomous_index = Constants::AUTONOMOUS::NONE;
     } else if (column_width < press_x && press_x < 2 * column_width) {
-      autonomous_index = Constants::AUTONOMOUS::DISRUPT_DEFENSE;
+      autonomous_index = Constants::AUTONOMOUS::SAFE_OFFENSE;
     } else if (2 * column_width < press_x && press_x < 3 * column_width) {
       autonomous_index = Constants::AUTONOMOUS::OFFENSE;
     } else if (3 * column_width < press_x && press_x < 4 * column_width) {
@@ -119,8 +119,8 @@ void preAutonomous() {
     case Constants::AUTONOMOUS::NONE:
       Brain.Screen.print("None");
       break;
-    case Constants::AUTONOMOUS::DISRUPT_DEFENSE :
-      Brain.Screen.print("Distrupt Defense");
+    case Constants::AUTONOMOUS::SAFE_OFFENSE :
+      Brain.Screen.print("Safe Offense");
       break;
     case Constants::AUTONOMOUS::OFFENSE :
       Brain.Screen.print("Offense");

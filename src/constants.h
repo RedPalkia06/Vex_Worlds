@@ -16,7 +16,7 @@ public:
     static constexpr float WHEELBASE = 30.0;
     static constexpr float TURNING_CONSTANT = 0.8;
     enum DIRECTION { CLOCKWISE, COUNTERCLOCKWISE };
-    enum AUTONOMOUS { NONE, DISRUPT_DEFENSE,  SAFE_DEFENSE,  OFFENSE,  SKILLS};
+    enum AUTONOMOUS { NONE, SAFE_OFFENSE,  SAFE_DEFENSE,  OFFENSE,  SKILLS};
 
 };
 

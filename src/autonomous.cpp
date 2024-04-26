@@ -129,44 +129,17 @@ void five_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics hor
   //drive to center triball
   
 }
-void six_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
+void safe_auto(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
   brain brain;
   double t_i = brain.Timer.time(seconds);
-  drivetrain.set_initial_position(new double[2] {25, 90});
-  drivetrain.Inertial.setHeading(270, degrees);
-  intake.spin(forward);
-  drivetrain.drive_for(-5, -100, 0.2);
-  drivetrain.drive_to_point(new double[2] {25, 160}, 100, 0.75);
-  drivetrain.drive_to_point(new double[2] {25, 90}, -50, 0.5);
-  thread delayIntake = thread(intake_delay);
-  drivetrain.drive_to_point(new double[2] {35, 82}, 30, 1);
-  drivetrain.turn_to_test(319);
-  wait(0.1, seconds);
-  vertical_wing.open();
-  drivetrain.drive_for(47, 50, 0.5);
-  drivetrain.turn_to_test(30);
-  drivetrain.drive_for(15, 50, 0.3);
-  vertical_wing.close();
-  wait(0.05, seconds);
-  drivetrain.turn_to_test(90);
-  drivetrain.turn_to_test(160);
-  drivetrain.drive_for(-40, -50, 0.5);
-  drivetrain.drive_for(70, 60, 0.4);
-  wait(0.1, seconds);
-  intake.spin(forward);
-  //might have to change drive_to_points into turn_to and drive_for at some point
-  drivetrain.drive_to_point(new double[2] {120, 155}, 70, 1.0);
-  drivetrain.turn_to_test(280, 1.2);
-  intake.spin(reverse);
-  wait(0.6, seconds);
-  intake.spin(reverse);
-  drivetrain.drive_to_point(new double[2] {135, 140}, 80, 0.8);
-  drivetrain.turn_to_test(75);
-  intake.stop();
-  horizontal_wing.open();
-  drivetrain.drive_for(-120, -100, 0.8);
-  horizontal_wing.close();
-  drivetrain.drive_for(20, 20, 0.5);
+  drivetrain.set_initial_position(new double[2] {35, 75});
+  drivetrain.Inertial.setHeading(215, degrees);
+  drivetrain.drive_for(-50, -10, 3);
+  drivetrain.turn_toPID(180);
+  drivetrain.drive_for(-70, -100, 0.6);
+  drivetrain.drive_for(50, 40, 0.8);
+  drivetrain.drive_for(-60, -100, 1);
+  drivetrain.drive_for(30, 20, 3);
   brain.Screen.setCursor(10, 10);
   brain.Screen.print(brain.Timer.time(seconds) - t_i);
   drivetrain.LeftSide.setStopping(coast);
