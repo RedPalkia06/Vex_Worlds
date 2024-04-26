@@ -70,6 +70,13 @@ void intake_delay() {
   intake.spin(reverse);
 }
 
+void wing_delay() {
+  brain Brain;
+  pneumatics wing = pneumatics(Brain.ThreeWirePort.B);
+  wait(0.4, seconds);
+  wing.open();
+}
+
 void five_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
   brain brain;
   double t_i = brain.Timer.time(seconds);
@@ -79,9 +86,9 @@ void five_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics hor
   drivetrain.Inertial.setHeading(45, degrees);
   vertical_wing.open();
   drivetrain.drive_for(15, 60, 0.6);
-  drivetrain.turn_to_test(20);
+  drivetrain.turn_to_test(22);
   intake.spin(reverse);
-  drivetrain.drive_for(45, 100, 0.5);
+  drivetrain.drive_for(55, 100, 0.7);
   drivetrain.drive_for(-20, -60, 0.5);
   vertical_wing.close();
   intake.spin(forward);
@@ -93,7 +100,7 @@ void five_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics hor
   intake.stop();
   drivetrain.drive_for(-40, -50, 0.5);
   intake.spin(forward);
-  drivetrain.drive_to_point(new double[2] {105, 100}, 60, 0.7);
+  drivetrain.drive_to_point(new double[2] {90, 100}, 60, 0.7);
   drivetrain.drive_to_point(new double[2] {100, 150}, 60, 0.6);
   drivetrain.turn_to_test(275, 1.2);
   intake.setVelocity(70, percent);
@@ -101,7 +108,7 @@ void five_piece(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics hor
   wait(0.6, seconds);
   intake.setVelocity(100, percent);
   intake.spin(forward);
-  drivetrain.drive_to_point(new double[2] {147, 150}, 80, 0.7);
+  drivetrain.drive_to_point(new double[2] {147, 150}, 80, 0.6);
   drivetrain.turn_to_test(260, 1);
   intake.setVelocity(70, percent);
   intake.spin(reverse);
@@ -214,17 +221,17 @@ void max_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics ho
 void safe_defense(Drivetrain &drivetrain, pneumatics vertical_wing, pneumatics horizontal_wing, motor intake) {
   brain brain;
   double t_i = brain.Timer.time(seconds);
-  drivetrain.set_initial_position(new double[2] {110, 35});
-  drivetrain.Inertial.setHeading(270, degrees);
-  drivetrain.drive_to_point(new double[2] {75, 80}, -50, 1.2);
+  drivetrain.set_initial_position(new double[2] {90, 45});
+  drivetrain.Inertial.setHeading(45, degrees);
+  drivetrain.drive_to_point(new double[2] {80, 80}, -50, 1.2);
   drivetrain.turn_to_test(270);
   drivetrain.drive_for(-30, -80, 0.5);
   drivetrain.drive_for(30, 40, 0.5);
   drivetrain.turn_to_test(305);
-  vertical_wing.open();
-  drivetrain.drive_to_point(new double[2] {100, 35}, 40, 1);
+  wing_delay();
+  drivetrain.drive_to_point(new double[2] {100, 27}, 40, 1);
   drivetrain.turn_to_test(0);
-  drivetrain.drive_for(30, 50, 0.7);
+  drivetrain.drive_for(50, 50, 0.9);
   drivetrain.drive_for(-30, -50, 0.5);
   vertical_wing.close();
   drivetrain.turn_toPID(173);

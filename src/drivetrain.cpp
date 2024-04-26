@@ -274,7 +274,7 @@ void Drivetrain::turn_to_test(double target_angle, double timeout) {
     RightSide.spin(forward);
     std::cout << angle;
     if(fabs(angle) <= 25 && fabs(angle) > 5) {
-        turn_toPID(target_angle);
+        turn_toPID(target_angle, timeout);
         return;
     }
     while(fabs(angle) > 20 && brain.Timer.time(seconds) - start_time < timeout) {

@@ -54,7 +54,7 @@ void autonomous() {
   } else if (autonomous_index == Constants::AUTONOMOUS::OFFENSE) {
     five_piece(drivetrain1, vertical_wing, horizontal_wings, Intake);
   }else if (autonomous_index == Constants::AUTONOMOUS::SAFE_DEFENSE) {
-
+    safe_defense(drivetrain1, vertical_wing, horizontal_wings, Intake);
   } else if (autonomous_index == Constants::AUTONOMOUS::SKILLS) {
     auto_skills(drivetrain1, vertical_wing, horizontal_wings, Intake, Launcher, climber);
   }
